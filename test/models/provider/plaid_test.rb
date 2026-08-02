@@ -2,11 +2,14 @@ require "test_helper"
 
 class Provider::PlaidTest < ActiveSupport::TestCase
   setup do
+    skip "Plaid credentials not configured" if Rails.application.config.plaid.nil?
+
     # Do not change, this is whitelisted in the Plaid Dashboard for local dev
     @redirect_url = "http://localhost:3000/accounts"
 
     # A specialization of Plaid client with sandbox-only extensions
     @plaid = Provider::PlaidSandbox.new
+
   end
 
   test "gets link token" do

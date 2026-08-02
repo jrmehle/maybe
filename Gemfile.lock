@@ -318,7 +318,7 @@ GEM
       net-imap
       net-pop
       net-smtp
-    marcel (1.0.4)
+    marcel (1.2.1)
     matrix (0.4.2)
     memory_profiler (1.1.0)
     method_source (1.1.0)

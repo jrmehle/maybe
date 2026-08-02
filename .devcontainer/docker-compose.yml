@@ -10,25 +10,22 @@ x-rails-env: &rails_env
   POSTGRES_PASSWORD: postgres
   BUNDLE_PATH: /bundle
   REDIS_URL: redis://redis:6379/1
+  RAILS_ENV: development
 
 services:
   app:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
-
     volumes:
       - ..:/workspace:cached
       - bundle_cache:/bundle
-
     ports:
       - "3000:3000"
-
-    command: sleep infinity
+    command: bin/rails server -b 0.0.0.0 -p 3000
 
     environment:
       <<: *rails_env
-
     depends_on:
       - db
       - redis
@@ -41,6 +38,10 @@ services:
     restart: unless-stopped
     environment:
       <<: *rails_env
+    volumes:
+      - ..:/workspace:cached
+      - bundle_cache:/bundle
+    working_dir: /workspace
     depends_on:
       - redis
 
@@ -55,7 +56,7 @@ services:
     image: postgres:latest
     restart: unless-stopped
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql
     environment:
       <<: *db_env
     ports:
