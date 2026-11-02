@@ -98,6 +98,7 @@ group :development do
   gem "web-console"
   gem "faker"
   gem "benchmark-ips"
+  gem "benchmark" # bundled gem (not default) as of Ruby 4.0; used by lib/tasks/benchmarking.rake
   gem "stackprof"
   gem "derailed_benchmarks"
   gem "foreman"
