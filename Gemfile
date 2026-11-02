@@ -61,7 +61,7 @@ gem "faraday-retry"
 gem "faraday-multipart"
 gem "inline_svg"
 gem "octokit"
-gem "pagy"
+gem "pagy", "~> 43.0"
 gem "rails-settings-cached"
 gem "tzinfo-data", platforms: %i[windows jruby]
 gem "csv"

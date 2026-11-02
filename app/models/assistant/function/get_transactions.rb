@@ -1,5 +1,5 @@
 class Assistant::Function::GetTransactions < Assistant::Function
-  include Pagy::Backend
+  include Pagy::Method
 
   class << self
     def default_page_size
@@ -147,7 +147,9 @@ class Assistant::Function::GetTransactions < Assistant::Function
         transfer_as_inflow: { outflow_transaction: { entry: :account } }
       ),
       page: params["page"] || 1,
-      limit: default_page_size
+      limit: default_page_size,
+      # Pagy 43 reads the request by default; there is no HTTP request here.
+      request: { base_url: "", path: "", params: {} }
     )
 
     totals = search.totals
@@ -173,7 +175,7 @@ class Assistant::Function::GetTransactions < Assistant::Function
       total_results: pagy.count,
       page: pagy.page,
       page_size: default_page_size,
-      total_pages: pagy.pages,
+      total_pages: pagy.last,
       total_income: totals.income_money.format,
       total_expenses: totals.expense_money.format
     }
