@@ -1,5 +1,5 @@
 ARG RUBY_VERSION=4.0.9
-FROM ruby:${RUBY_VERSION}-slim-bullseye
+FROM ruby:${RUBY_VERSION}-slim-trixie
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
   && apt-get -y install --no-install-recommends \
