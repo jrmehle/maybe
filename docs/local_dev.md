@@ -133,6 +133,117 @@ As of the last full run: **0 failures, 0 errors, 9 skips** (902 runs total). The
 are the Plaid sandbox tests described above — expected and fine without credentials
 configured.
 
+## Restoring a local backup
+
+For vetting changes against real data, you can restore a gzipped `pg_dump` backup into the
+devcontainer's `db` service.
+
+Drop your backup file into the project's `tmp/` folder on the host. The restore commands
+below run `gunzip` on the **host** and pipe the output into `docker compose exec -T db`
+(the `-T` flag allows stdin to pass through into the exec'd process) — this runs directly
+against the `db` service rather than going through `app`, since `psql`/`pg_restore` need to
+run somewhere they're actually installed (the `db` container, built from the official
+`postgres` image, has them; `app` isn't guaranteed to), and `db` doesn't have the workspace
+mounted so it can't read `tmp/` on its own.
+
+**Important — target the actual Rails-configured database, not the Postgres default.**
+`POSTGRES_DB: postgres` in the devcontainer's `x-db-env` block only sets the name of the
+*default/superuser* database that exists when the Postgres container first boots. It is
+**not** the database Rails actually connects to. The app's real database name comes from
+`config/database.yml` and is `maybe_development` in this fork. Restoring into `postgres`
+will silently succeed but leave `maybe_development` empty — which is why the app still
+shows the first-time setup prompt even after a "successful" restore.
+
+Confirm the real name any time with:
+
+```bash
+bin/dc bin/rails runner 'puts ActiveRecord::Base.connection_db_config.database'
+```
+
+Steps:
+
+1. **Drop and recreate the dev database** so you're restoring into a clean slate — Rails'
+   own db tasks run through `app` (that's where Rails lives) and stay in sync with
+   `database.yml` automatically:
+
+   ```bash
+   bin/dc bin/rails db:drop db:create
+   ```
+
+2. **Unzip and restore**, run from the host, targeting `db` directly:
+
+   ```bash
+   gunzip -c tmp/backup.sql.gz | docker compose -f .devcontainer/docker-compose.yml exec -T -e PGPASSWORD=postgres db psql -U postgres -d maybe_development
+   ```
+
+3. **Run any pending migrations** in case the backup predates code changes in your fork:
+
+   ```bash
+   bin/dc bin/rails db:migrate
+   ```
+
+> **If your backup script ever switches to custom-format dumps** (`pg_dump -Fc`, a binary
+> file rather than plain SQL), step 2 changes to `pg_restore` instead of `psql`:
+> ```bash
+> gunzip -c tmp/backup.dump.gz | docker compose -f .devcontainer/docker-compose.yml exec -T -e PGPASSWORD=postgres db pg_restore -U postgres -d maybe_development --clean --if-exists
+> ```
+> You can tell which format you have by running `file` on the uncompressed dump — plain text
+> is a SQL dump, binary is custom format.
+
+### `bin/restore_db` script
+
+Rather than typing these by hand each time, `bin/restore_db` automates it — using
+`rails db:drop db:create` through `app`, and piping the unzip through the host into `db`
+via `exec -T`:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ -z "${1:-}" ]; then
+  echo "Usage: bin/restore_db path/to/backup.sql.gz"
+  echo "  (path should be relative to the project root, e.g. tmp/backup.sql.gz)"
+  exit 1
+fi
+
+BACKUP_FILE="$1"
+COMPOSE_FILE=".devcontainer/docker-compose.yml"
+
+if [ ! -f "$BACKUP_FILE" ]; then
+  echo "File not found: $BACKUP_FILE"
+  exit 1
+fi
+
+echo "Dropping and recreating the database via Rails..."
+bin/dc bin/rails db:drop db:create
+
+echo "Determining target database name from Rails config..."
+DB_NAME=$(bin/dc bin/rails runner 'puts ActiveRecord::Base.connection_db_config.database' | tail -n 1)
+
+echo "Restoring into database: $DB_NAME"
+gunzip -c "$BACKUP_FILE" | docker compose -f "$COMPOSE_FILE" exec -T -e PGPASSWORD=postgres db psql -U postgres -d "$DB_NAME"
+
+echo "Running migrations..."
+bin/dc bin/rails db:migrate
+
+echo "Done. Restored into '$DB_NAME' from $BACKUP_FILE"
+```
+
+```bash
+chmod +x bin/restore_db
+```
+
+Usage:
+
+```bash
+bin/restore_db tmp/backup.sql.gz
+```
+
+Restoring real production data locally means the database now contains real user data — treat it
+with the same care you would in production (don't commit it, don't leave it running longer
+than needed for the task, wipe it via `bin/down` + volume removal when done if that matters
+to you).
+
 ## Open items / TODO
 
 - [ ] Confirm `git` is available inside the devcontainer's `Dockerfile` build (needed for

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ -z "${1:-}" ]; then
+  echo "Usage: bin/restore_db path/to/backup.sql.gz"
+  echo "  (path should be relative to the project root, e.g. tmp/backup.sql.gz)"
+  exit 1
+fi
+
+BACKUP_FILE="$1"
+COMPOSE_FILE=".devcontainer/docker-compose.yml"
+
+if [ ! -f "$BACKUP_FILE" ]; then
+  echo "File not found: $BACKUP_FILE"
+  exit 1
+fi
+
+echo "Dropping and recreating the database via Rails..."
+bin/dc bin/rails db:drop db:create
+
+echo "Determining target database name from Rails config..."
+DB_NAME=$(bin/dc bin/rails runner 'puts ActiveRecord::Base.connection_db_config.database' | tail -n 1)
+
+echo "Restoring into database: $DB_NAME"
+gunzip -c "$BACKUP_FILE" | docker compose -f "$COMPOSE_FILE" exec -T -e PGPASSWORD=postgres db psql -U postgres -d "$DB_NAME"
+
+echo "Running migrations..."
+bin/dc bin/rails db:migrate
+
+echo "Done. Restored into '$DB_NAME' from $BACKUP_FILE"
