@@ -109,3 +109,6 @@ scripts/
 
 # mise config
 mise.toml
+
+# Local Rails/Ruby upgrade patch series (parked; apply later)
+/maybe patches/
