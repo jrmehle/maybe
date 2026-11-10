@@ -32,6 +32,12 @@ class ChatsTest < ApplicationSystemTestCase
 
     click_on @user.chats.first.title
 
+    # The chat page records the last viewed chat server-side while rendering,
+    # so wait for it to finish loading before refreshing the page.
+    within "#chat-container" do
+      assert_selector "h1", text: @user.chats.first.title
+    end
+
     # Page refresh
     visit root_url
 

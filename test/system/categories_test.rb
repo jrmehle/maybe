@@ -11,6 +11,10 @@ class CategoriesTest < ApplicationSystemTestCase
     fill_in "Name", with: "My Shiny New Category"
     click_button "Create Category"
 
+    # The form submits asynchronously from a Turbo frame, so wait for the
+    # submission (and its redirect) to complete before navigating away.
+    assert_text "Category created successfully"
+
     visit categories_url
     assert_text "My Shiny New Category"
   end

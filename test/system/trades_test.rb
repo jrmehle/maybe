@@ -46,6 +46,12 @@ class TradesTest < ApplicationSystemTestCase
     open_new_trade_modal
 
     select "Sell", from: "Type"
+
+    # Selecting a type reloads the form inside the modal's Turbo frame. Wait
+    # for the server-rendered form to replace the current one before filling
+    # it in, otherwise the entered values are discarded when the frame swaps.
+    find "#model_type option[value='sell'][selected]"
+
     fill_in "Ticker symbol", with: "AAPL"
     fill_in "Date", with: Date.current
     fill_in "Quantity", with: qty
