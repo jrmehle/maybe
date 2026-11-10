@@ -28,6 +28,10 @@ class TradesTest < ApplicationSystemTestCase
 
     click_button "Add transaction"
 
+    # The form submits asynchronously from a Turbo frame, so wait for the
+    # submission (and its redirect) to complete before navigating away.
+    assert_text "Entry created"
+
     visit_trades
 
     within_trades do
@@ -48,6 +52,10 @@ class TradesTest < ApplicationSystemTestCase
     fill_in "model[price]", with: 215.33
 
     click_button "Add transaction"
+
+    # The form submits asynchronously from a Turbo frame, so wait for the
+    # submission (and its redirect) to complete before navigating away.
+    assert_text "Entry created"
 
     visit_trades
 
