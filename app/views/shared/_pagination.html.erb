@@ -16,7 +16,8 @@
       <% end %>
     </div>
     <div class="rounded-xl p-1 bg-container-inset">
-      <% pagy.series.each do |series_item| %>
+      <%# Pagy 43 made #series a protected instance method; its own series_nav helper calls it internally. %>
+      <% pagy.send(:series).each do |series_item| %>
         <% if series_item.is_a?(Integer) %>
           <%= link_to pagy.page_url(series_item),
                 data: { turbo_frame: :_top },

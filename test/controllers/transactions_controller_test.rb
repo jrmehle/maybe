@@ -133,19 +133,13 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
   assert_operator page_2_count, :>, 0, "Page 2 should show some transactions"
   assert_operator page_2_count, :<=, 10, "Page 2 should not exceed per_page limit"
 
-  # Test Pagy overflow handling - should redirect or handle gracefully
+  # Pagy 43 dropped the `overflow: :last_page` behavior from Pagy 9: an
+  # out-of-range page now renders an empty page instead of the last page.
   get transactions_url(page: 9999999, per_page: 10)
-
-  # Either success (if Pagy shows last page) or redirect (if Pagy redirects)
-  assert_includes [ 200, 302 ], response.status, "Pagy should handle overflow gracefully"
-
-  if response.status == 302
-    follow_redirect!
-    assert_response :success
-  end
+  assert_response :success
 
   overflow_count = css_select("turbo-frame[id^='entry_']").count
-  assert_operator overflow_count, :>, 0, "Overflow should show some transactions"
+  assert_equal 0, overflow_count, "Out-of-range pages should render empty in Pagy 43"
 end
 
   test "calls Transaction::Search totals method with correct search parameters" do

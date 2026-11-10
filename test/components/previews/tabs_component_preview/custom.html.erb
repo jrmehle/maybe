@@ -1,4 +1,4 @@
-<%= render TabsComponent.new(
+<%= render DS::Tabs.new(
   variant: :unstyled,
   active_tab: "tab1", 
   active_btn_classes: "bg-white text-primary", 
@@ -12,18 +12,11 @@
 
     <div class="flex flex-col w-full">
       <div class="h-[200px] p-4">
-        <%= tabs.with_panel(tab_id: "tab1") do %>
-          <%= content_tag(:p, "Content for tab 1") %>
-        <% end %>
-
-        <%= tabs.with_panel(tab_id: "tab2") do %>
-          <%= content_tag(:p, "Content for tab 2") %>
-        <% end %>
+        <%= tabs.with_panel(tab_id: "tab1") { content_tag(:p, "Content for tab 1") } %>
+        <%= tabs.with_panel(tab_id: "tab2") { content_tag(:p, "Content for tab 2") } %>
       </div>
 
-      <div class="w-full border-t border-secondary p-4">
-        Footer
-      </div>
+      <div class="w-full border-t border-secondary p-4">Footer</div>
     </div>
   </div>
 <% end %>

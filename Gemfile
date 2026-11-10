@@ -30,6 +30,9 @@ gem "hotwire_combobox"
 # Background Jobs
 gem "sidekiq"
 gem "sidekiq-cron"
+# Sidekiq 8.0.x calls ConnectionPool::TimedStack#pop positionally, which
+# connection_pool 3.0 no longer accepts. Remove once Sidekiq 8.1+ is adopted.
+gem "connection_pool", "~> 2.5"
 
 # Monitoring
 gem "vernier"
@@ -107,6 +110,7 @@ end
 group :test do
   gem "capybara"
   gem "selenium-webdriver"
+  gem "minitest-mock" # minitest/mock was extracted from minitest in 6.0
   gem "mocha"
   gem "vcr"
   gem "webmock"
