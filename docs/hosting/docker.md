@@ -39,7 +39,7 @@ Make sure you are in the directory you just created and run the following comman
 
 ```bash
 # Download the sample compose.yml file from the Maybe Github repository
-curl -o compose.yml https://raw.githubusercontent.com/maybe-finance/maybe/main/compose.example.yml
+curl -o compose.yml https://raw.githubusercontent.com/jrmehle/maybe/main/compose.example.yml
 ```
 
 This command will do the following:
@@ -133,20 +133,20 @@ docker compose ls
 
 Your app is now set up. You can visit it at `http://localhost:3000` in your browser.
 
-If you find bugs or have a feature request, be sure to read through our [contributing guide here](https://github.com/maybe-finance/maybe/wiki/How-to-Contribute-Effectively-to-this-Project).
+If you find bugs or have a feature request, be sure to [open an issue here](https://github.com/jrmehle/maybe/issues).
 
 ## How to update your app
 
 The mechanism that updates your self-hosted Maybe app is the GHCR (Github Container Registry) Docker image that you see in the `compose.yml` file:
 
 ```yml
-image: ghcr.io/maybe-finance/maybe:latest
+image: ghcr.io/jrmehle/maybe:latest
 ```
 
-We recommend using one of the following images, but you can pin your app to whatever version you'd like (see [packages](https://github.com/maybe-finance/maybe/pkgs/container/maybe)):
+We recommend using one of the following images, but you can pin your app to whatever version you'd like (see [packages](https://github.com/jrmehle/maybe/pkgs/container/maybe)):
 
-- `ghcr.io/maybe-finance/maybe:latest` (latest commit)
-- `ghcr.io/maybe-finance/maybe:stable` (latest release)
+- `ghcr.io/jrmehle/maybe:latest` (latest commit)
+- `ghcr.io/jrmehle/maybe:stable` (latest release)
 
 By default, your app _will
 NOT_ automatically update. To update your self-hosted app, run the following commands in your terminal:
@@ -163,7 +163,7 @@ docker compose up --no-deps -d web worker # This restarts the app using the newe
 If you'd like to pin the app to a specific version or tag, all you need to do is edit the `compose.yml` file:
 
 ```yml
-image: ghcr.io/maybe-finance/maybe:stable
+image: ghcr.io/jrmehle/maybe:stable
 ```
 
 After doing this, make sure and restart the app:
