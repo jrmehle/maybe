@@ -1,10 +1,3 @@
-GIT
-  remote: https://github.com/maybe-finance/lucide-rails.git
-  revision: 272e5fb8418ea458da3995d6abe0ba0ceee9c9f0
-  specs:
-    lucide-rails (0.2.0)
-      railties (>= 4.1.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -323,6 +316,8 @@ GEM
       view_component (>= 2.0)
       yard (~> 0.9)
       zeitwerk (~> 2.5)
+    lucide-rails (0.7.4)
+      railties (>= 4.1.0)
     mail (2.8.1)
       mini_mime (>= 0.1.1)
       net-imap
@@ -674,7 +669,7 @@ DEPENDENCIES
   letter_opener
   logtail-rails
   lookbook
-  lucide-rails!
+  lucide-rails (~> 0.7.4)
   minitest-mock
   mocha
   octokit
