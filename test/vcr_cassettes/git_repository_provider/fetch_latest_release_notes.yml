@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: https://api.github.com/repos/maybe-finance/maybe/releases
+    uri: https://api.github.com/repos/jrmehle/maybe/releases
     body:
       encoding: US-ASCII
       string: ''
@@ -81,7 +81,7 @@ http_interactions:
     uri: https://api.github.com/markdown
     body:
       encoding: UTF-8
-      string: '{"mode":"gfm","context":"maybe-finance/maybe","text":"## Data resets,
+      string: '{"mode":"gfm","context":"jrmehle/maybe","text":"## Data resets,
         offline investment trades, and miscellaneous stability improvements\r\n\r\nThis
         release comes with a wide mix of stability improvements and quality of life
         updates; particularly for self hosted apps, which can now be \"reset\" in
