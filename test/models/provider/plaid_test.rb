@@ -9,7 +9,6 @@ class Provider::PlaidTest < ActiveSupport::TestCase
 
     # A specialization of Plaid client with sandbox-only extensions
     @plaid = Provider::PlaidSandbox.new
-
   end
 
   test "gets link token" do

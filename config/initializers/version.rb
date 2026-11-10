@@ -7,7 +7,7 @@ module Maybe
     def commit_sha
       ENV["BUILD_COMMIT_SHA"].presence || `git rev-parse HEAD 2>/dev/null`.strip.presence || "unknown"
     rescue Errno::ENOENT
-      'unknown'
+      "unknown"
     end
 
     private
